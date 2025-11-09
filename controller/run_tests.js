@@ -168,7 +168,9 @@ async function run_tests(num){
   let not_spawned_yet = true;
 
   let vm_alive = num;
-  while (vm_alive > 0) {
+  while (vm_alive > 0)
+    try
+  {
     vm_alive = 0;
     const idx_for_deletion = [];
     const idx_found = [];
@@ -265,8 +267,9 @@ async function run_tests(num){
     if (vm_alive>0) {
       await setTimeout(wait_updates);
     }
+  } catch (err) {
+    console.log(`Error: ${err.message}`);
   }
-
 }
 
 console.log(`Starting run_tests(${config.get(ARG_RUNNERS)})`);
