@@ -5,5 +5,5 @@ YI_PORT=8400
 SRVNAME=`curl -s http://localhost:$YI_PORT/`
 if [ "$SRVNAME" != "yarrow-index" ]; then
   echo "Starting index service"
-  node ../lib/index.js >> /var/yarrow/yarrow-index.log &
+  node ../lib/index.js &
 fi
