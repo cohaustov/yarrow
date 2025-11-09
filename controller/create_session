@@ -25,5 +25,5 @@ echo $SESSION_NAME
 
 # starting services to be used by running tests
 cd $BINDIR
-exec ./start_services >>$LOGDIR/services.log
+bash -c "./start_services >>$LOGDIR/services.log"
 
