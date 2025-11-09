@@ -62,15 +62,21 @@ yarrow
   + lib
   + runner
   + tests
-your_project_tests
+project_one_selenium_tests
+  + test_one
+  + test_two
+project_two_selenium_tests
   + test_one
   + test_two
 
 Residing the tests this way is convenent because:
 1) you keep yarrow code unchanged and can 'git pull' new versions if needed
-2) you can push 'your_project_tests' separately
-3) you can access common JavaScript files from your test scripts like this: require("../../lib/args.js')
-
+2) the directories 'project_one_selenium_tests' and 'project_two_selenium_tests' can be in their own git repositories
+3) JavaScript code provided by 'yarrow' can be uniformly accessed from that projects: 
+const args = require("../../yarrow/lib/args.js")
+4) on the runner machines this path will also work for accessing library code:
+/var/yarrow/lib
+/var/yarrow/tests
 
 3. Install "selenium webdriver" in the folder where you will edit and run the scripts locally.
 npm install selenium-webdriver
