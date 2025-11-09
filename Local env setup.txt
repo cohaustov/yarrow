@@ -1,0 +1,49 @@
+Setting up local environment for running Selenium tests in a cloud
+==================================================================
+
+About
+-----
+This document describes how to run Selenium tests in a cloud to generate natural load for performance testing.
+Currently, only GCP is supported as a cloud platform. Instructions on setting up the infrastructure in cloud is provided in a separate document.
+This document is devoted to configuring local environment for a QA Engineer. The tests can be written and tested locally and then run on the cloud.
+The tool consisting of the scripts and the setup providing this cloud testing functionality is named “yarrow” (millefolium) just to have a name that is not associated with clouds.
+Here is a brief schema of the tool.
+[Local] - scripts that run on a local machine of the QA Engineer (the user of the tool)
+[Controller] - a virtual machine instance for performing controlling tasks; communicates with the user, spawns new instances of runners, stores results of the tests.
+[Runner] - a virtual machine that runs individual tests; Runners are massively created when the test starts and being deleted when the test ends.
+
+Local env setup
+---------------
+There are several tasks to do one locally and in cloud to setup local working environment.
+
+1. On your local machine. Get latest version of scripts from the git repository. On Windows, do this from WSL.
+git clone git://git.haustov.com/yarrow
+
+2. On your local machine. Set correct IP or domain name of the Controller host you are going to use.
+Set parameter "HOST" in the file "yarrow_config".
+
+3. On the cloud deployment, on the Controller machine. Add new user and use that user name everywhere below instead of <username>:
+sudo useradd -m -s /bin/bash <username>
+
+4. On your local Unix machine (on Windows - in WSL, on Mac or Linux - in terminal) run following command to generate key pair.
+Do not set password for the key! Just press enter instead.
+ssh-keygen -t rsa -f ~/.ssh/<username>-ssh-key -C <username>
+
+5. On your local machine. Set parameter "SSH_KEY" in the file "yarrow_config".
+SSH_KEY="~/.ssh/<username>-ssh-key"
+
+6. On the cloud deployment, in settings on Controller machine. Add contents of the public key to the HOST's list of trusted SSH keys.
+You need to use content of the file ~/.ssh/<username>-ssh-key.pub, the content looks similar to this:
+ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDf7IR9pF5noYHkUu8k77xZSwTUFK3PFgL6mfqytPPw3CMc+4t9N0uPhu3eSSDo9O/hS/1Hw/xdLwZWDz1Bz8AGEYZw+gJ1OwD4M8v4b1ZKp/4e4lYHztW3BC1LEhwDibe9pY9A4svwD7zrQD4jFWqj6CkBJMPb9GvzKKStMg/4WOCvRxprluCQioEgcP6Qr7bDMfPxTbyfaV7HHT1/MECZqx1zZJlTtjtHiX4enE32ux2XS2v4ydHKURH1iIkl7QoItT/3xFufhY12qfe8AiL6Ttdpe0wLCpqGvx3L1oxK0tJVMEl6e3b4ZdEMXe3HFONX2ZMYdeyXOsiXrCDLtOZMJAr5PoIgm6rnB6j5QdCOpzGflGinYSyBNIREPmvwqKde1yUhtQsrtXEXvwX1iwulGxwpYa1T7/5ZHbDKgPYauZ5NN/4Tj6+KR6tY6XjLirfpvvgz3Sm2yN35V/j9IByzQj2uhvj3zrHgffTYNEfjbOMx4Gy0h42TXPPOn4md22s= khaustov
+
+7. Ensure the scripts are available for running.
+Change access mode:
+chmod 777 yarrow/Local/yarrow*
+
+Check that the path to the scripts directory is in PATH environment variable.
+It can be added for one session:
+export PATH=$PATH:<path to the directory>/yarrow/Local/
+
+Or it can be added to .bashrc file like this:
+PATH=$PATH:<path to the directory>/yarrow/Local/
+
