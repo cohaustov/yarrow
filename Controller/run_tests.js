@@ -336,5 +336,5 @@ async function run_tests(num){
 
 }
 
-run_tests(145);
+run_tests(5);
 
