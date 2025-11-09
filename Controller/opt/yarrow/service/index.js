@@ -1,16 +1,7 @@
 const { createServer } = require('node:http');
 const { exit } = require('node:process');
 const { URL } = require('node:url');
-
-const port = process.env.YI_PORT || 8400;
-const host = process.env.YI_HOST || "localhost";
-
-const baseURL = `http://${host}:${port}/`;
-
-const PATH_NEXTID = '/nextid';
-const PATH_TERMINATE = '/terminate_n0w';
-const PARAM_SESSION = 'session';
-const PARAM_VMID = 'vmid';
+const cfg = require('./index_cfg');
 
 // Map of int indexes, every read request increments value of the index; indexind starts from 0; indexes.get(sesion) - gives current index
 const indexes = new Map();
@@ -20,10 +11,10 @@ const indexes = new Map();
 // const assignments = new Map();
 
 createServer((req, res) => {
-  const reqURL = new URL(req.url, baseURL);
-  if (reqURL.pathname == PATH_NEXTID) {
-    const session = reqURL.searchParams.get(PARAM_SESSION) ?? "default"; // if session is not provided, using "default"
-    const vmid = reqURL.searchParams.get(PARAM_VMID) | 0; // if vmid is not provided, using 0 (normally, VM numeration starts from 1)
+  const reqURL = new URL(req.url, cfg.getBaseURL());
+  if (reqURL.pathname == cfg.PATH_NEXTID) {
+    const session = reqURL.searchParams.get(cfg.PARAM_SESSION) ?? "default"; // if session is not provided, using "default"
+    const vmid = reqURL.searchParams.get(cfg.PARAM_VMID) | 0; // if vmid is not provided, using 0 (normally, VM numeration starts from 1)
 
     const id = indexes.has(session) ? indexes.get(session) + 1 : 0;
     indexes.set(session, id);
@@ -31,7 +22,7 @@ createServer((req, res) => {
     res.writeHead(200, { "Content-Type": "application/json" });
     res.write(`{"id": ${id}, "session": "${session}", "vmid": "${vmid}"}\n`);
     res.end();
-  } else if (reqURL.pathname == PATH_TERMINATE) {
+  } else if (reqURL.pathname == cfg.PATH_TERMINATE) {
     res.writeHead(200, { "Content-Type": "text/plain" });
     res.write("Terminated");
     res.end();
@@ -43,6 +34,6 @@ createServer((req, res) => {
     res.end();
   }
 
-}).listen(port, () => {
-  console.log(`Yarrow-index is running on port ${port}`);
+}).listen(cfg.port, () => {
+  console.log(`Yarrow-index is running on port ${cfg.port}`);
 });
