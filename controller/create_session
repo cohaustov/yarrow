@@ -22,8 +22,3 @@ mkdir $SESSIONDIR/$SESSION_NAME
 mkdir $SESSIONDIR/$SESSION_NAME/code
 chmod 777 $SESSIONDIR/$SESSION_NAME
 echo $SESSION_NAME
-
-# starting services to be used by running tests
-cd $BINDIR
-bash -c "./start_services >>$LOGDIR/services.log"
-
