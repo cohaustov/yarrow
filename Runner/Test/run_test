@@ -1,0 +1,12 @@
+#!/bin/sh
+RUNDIR=`uname -n | cut -d'.' -f1`-`date +"%y%m%d-%H%M"`
+gsutil cp gs://haustov/test-src/test.js test.js
+Xvfb :0 -screen 0 1920x1080x24 2>x_err &
+DISPLAY=:0; export DISPLAY
+mkdir $RUNDIR
+cd $RUNDIR
+node ../test.js >log.txt
+cd ..
+tar -czf $RUNDIR.tgz $RUNDIR
+gsutil cp $RUNDIR.tgz gs://haustov/test-log/
+#sudo shutdown now
