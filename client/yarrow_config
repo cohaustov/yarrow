@@ -6,7 +6,7 @@
 ######################
 # "Controller" host
 # Specify IP address of demain name of the machine where "Yarrow Controller" is deployed
-HOST=34.79.214.66
+HOST=35.241.188.11
 
 # Username to login on the HOST
 # 1) Add a user on the host "Controller": sudo useradd -m <username>
