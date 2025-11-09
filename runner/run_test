@@ -7,7 +7,7 @@ RUNDIR=`uname -n | cut -d'.' -f1`-`date +"%y%m%d-%H%M"`
 VMID=`uname -n | cut -d'.' -f1 | sed 's/[^1-9]*//'`
 USER=yarrow
 SSH_KEY="/home/yarrow/.ssh/yarrow-runner-ssh-key"
-BASEDIR=/var/yarrow
+BASEDIR=/var/yarrow/session
 CODEDIR=code
 LOCALDIR=/var/yarrow/tests
 scp -o "StrictHostKeyChecking accept-new" -i "$SSH_KEY" scp://"$USER"@"$Y_HOST"/$BASEDIR/$Y_SESSION/$CODEDIR/* $LOCALDIR
