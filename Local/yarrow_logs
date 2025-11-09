@@ -20,3 +20,6 @@ fi
 
 # Calling 'create_session' script; specifying option "StrictHostKeyChecking accept-new" to avoid questions about host's key
 scp -o "StrictHostKeyChecking accept-new" -i "$SSH_KEY" scp://"$USER"@"$HOST"/$BASEDIR/$1/*.tgz $TARGET
+
+echo "Aggregating logs from runners into one file"
+exec yarrow_agglog >log.txt

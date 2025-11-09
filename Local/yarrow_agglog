@@ -1,0 +1,7 @@
+#!/bin/bash
+#find . -maxdepth 0 -name "*.tgz" -type f | while read -r file; do
+ls *.tgz | awk '{print substr($0,1,index($0,".tgz")-1)}' | while read -r file; do
+    tar -O -xzf "$file".tgz "$file"/log.txt
+#    echo "$file".tgz "$file"/log.txt >>log.txt
+done
+
