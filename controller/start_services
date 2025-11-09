@@ -1,9 +1,10 @@
 #!/bin/bash
 #
 # Start index service
-YI_PORT=8400 
+LOGDIR=/var/yarrow/log/
+YI_PORT=8400
 SRVNAME=`curl -s http://localhost:$YI_PORT/`
 if [ "$SRVNAME" != "yarrow-index" ]; then
-  echo "Starting index service"
-  node ../lib/index.js &
+  echo "Starting index service - " `date`
+  node ../lib/index.js >>$LOGDIR/service-index.log &
 fi

@@ -1,9 +1,29 @@
 #!/bin/bash
-cd /opt/yarrow/controller
-exec ./start_services
-BASEDIR=/var/yarrow
+BINDIR=/opt/yarrow/controller
+VARDIR=/var/yarrow
+LOGDIR=$VARDIR/log
+SESSIONDIR=$VARDIR/session
+
+# creating a directory for logs
+if [ ! -d $LOGDIR ]; then
+  mkdir $LOGDIR
+  chmod 777 $LOGDIR
+fi
+
+# creating a directory for sessions
+if [ ! -d /var/yarrow/session ]; then
+  mkdir /var/yarrow/session
+  chmod 777 /var/yarrow/session
+fi
+
+# creating the session and echoing session name back to the calling script
 SESSION_NAME=`whoami`-`date +"%y%m%d-%H%M%S"`
-mkdir $BASEDIR/$SESSION_NAME
-mkdir $BASEDIR/$SESSION_NAME/code
-chmod 777 $BASEDIR/$SESSION_NAME
+mkdir $SESSIONDIR/$SESSION_NAME
+mkdir $SESSIONDIR/$SESSION_NAME/code
+chmod 777 $SESSIONDIR/$SESSION_NAME
 echo $SESSION_NAME
+
+# starting services to be used by running tests
+cd $BINDIR
+exec ./start_services >>$LOGDIR/services.log
+
