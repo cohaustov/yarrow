@@ -11,29 +11,27 @@ if [[ -z $1 ]]; then
   exit 1
 fi
 
-# Calling 'create_session' script; specifying option "StrictHostKeyChecking accept-new" to avoid questions about host's key
-SESSION_NAME=`ssh -o "StrictHostKeyChecking accept-new" -i "$SSH_KEY" "$USER"@"$HOST" "$BINDIR"/create_session`
-echo "Created test session: $SESSION_NAME"
-
 SCRIPT_FILE=`basename $1`
-#echo "scp://"$USER"@"$HOST"/$BASEDIR/$SCRIPT_FILE"
 if [[ ! $SCRIPT_FILE =~ .*\.js ]]; then
   echo "First parameter must be JavaScript file to run: $SCRIPT_FILE"
   exit 1
 fi
 
+# Calling 'create_session' script; specifying option "StrictHostKeyChecking accept-new" to avoid questions about host's key
+SESSION_NAME=`ssh -o "StrictHostKeyChecking accept-new" -i "$SSH_KEY" "$USER"@"$HOST" "$BINDIR"/create_session`
+echo "Created test session: $SESSION_NAME"
+
 echo "Copying code files to the session code storage"
 params=""
 for a in $@; do
   if [[ -f "$a" ]]; then
-    #echo `basename $a`
     scp -i "$SSH_KEY" $a scp://"$USER"@"$HOST"/$BASEDIR/$SESSION_NAME/$CODEDIR/`basename $a`
-  else 
+  else
     params="$params $a"
   fi
 done
 
 echo "Sending parameters: "$params
 
-#scp -i "$SSH_KEY" $1 scp://"$USER"@"$HOST"/$BASEDIR/$SESSION_NAME/$SCRIPT_FILE
+# Running the script with all the params that were passed and additional two params: 'session' and 'script'
 ssh -i "$SSH_KEY" "$USER"@"$HOST" "$BINDIR"/run_test session=$SESSION_NAME script=$SCRIPT_FILE $params
