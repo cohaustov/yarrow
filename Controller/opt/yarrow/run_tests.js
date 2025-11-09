@@ -1,46 +1,63 @@
-const projectId = 'minidesk-446816';
-const zone = 'europe-west1-d';
-const region = 'europe-west1';
-const zones_allowed = {
-  "zones/europe-west1-b": {"preference": "ALLOW"},
-  "zones/europe-west1-c": {"preference": "ALLOW"},
-  "zones/europe-west1-d": {"preference": "ALLOW"}
+// Creates specified number of VM instances on GCP cloud
+// Runs a shell-script on each instance that does some actions and initiates shutdown of the machine
+// Tracks status of all created instances and deletes those that have stopped
+
+const {exit} = require('node:process');
+const {setTimeout} = require('node:timers/promises');
+const {InstancesClient} = require('@google-cloud/compute').v1;
+const args = require("./args.js");
+
+const script_params = args.toString();
+
+// mandatory arguments
+const ARG_HOST = "host";
+const ARG_SESSION = "session";
+const ARG_SCRIPT = "script";
+const mandatory_args = [ARG_HOST, ARG_SESSION, ARG_SCRIPT];
+
+// optional arguments
+const ARG_RUNNERS = "runners";
+const config = new Map([
+  [ARG_RUNNERS, 5] // number of parallel runners
+]);
+
+args.fillConfig(config);
+
+for (const e of mandatory_args.values()) {
+  if (!config.has(e)) {
+    console.log("Missing mandatory argument: " + e);
+    exit(1);
+  }
 }
-//const zone = 'us-central1-a';
-//const region = 'us-central1';
-const number = '779975313204';
 
-const provisioning = "STANDARD";
-//const provisioning = "SPOT";
-const vm_image = "spore-master-std-image";
-const vm_template = "spore-vm-template";
 
-const vm_base_name = "spore-vm-";
-const vm_startup_script = "cd /home/konstantin_haustov/Test\nsudo -u konstantin_haustov ./run_test\nsudo shutdown now\n";
+// TODO: read current projectId and zone via GCP API
+// GCP project where to run instances
+const projectId = 'minidesk-446816';
+// GCP zone where to run instances
+const zone = 'europe-west1-d';
 
-const wait_spawns = 500;
+// VM template to use for creation of instances
+const vm_template = "runner-vm-template";
+// disk image to use for creation of instances
+const vm_disk_image = "global/images/runner-master-disk";
+// disk name to use for creation of instances
+const vm_disk_name = "runner-disk";
+// VMs will have names of format "prefix###"; the prefix is defined here, ### is number
+const vm_base_name = "runner-";
+
+// shell script to run on startup on each VM instance
+const vm_startup_script = `cd /var/yarrow\nsudo -u yarrow bash -c "export Y_SESSION=${config.get(ARG_SESSION)} Y_SCRIPT=${config.get(ARG_SCRIPT)} Y_HOST=${config.get(ARG_HOST)}; ./run_test ${script_params}"\nsudo shutdown now\n`;
+
+// milliseconds to wait between VM status updates
 const wait_updates = 5000;
 
-const {InstancesClient} = require('@google-cloud/compute').v1;
-const {setTimeout} = require('node:timers/promises');
-
+// GCP cloud compute API client
 const computeClient = new InstancesClient();
 
 
-
-function getInstance(vm_name) {
-  // Construct request
-  const request = {
-    instance: vm_name,
-    project: projectId,
-    zone,
-  };
-
-  // Run request
-  return computeClient.get(request);
-}
-
-
+// List all the VM instances currentlty existing in current project and zone
+// This returns not only 'runners', but we will filter it
 function listInstances() {
   return computeClient.list({
     project: projectId,
@@ -48,82 +65,14 @@ function listInstances() {
   });
 }
 
-function createInstance(vm_name, image_name) {
-  return computeClient.insert({
-    project: projectId,
-    zone: zone,
-    instanceResource: {
-      "name": vm_name,
-      "zone": `projects/${projectId}/zones/${zone}`,
-      "machineType": `projects/${projectId}/zones/${zone}/machineTypes/e2-micro`,
-      "disks": [
-        {
-          "autoDelete": true,
-          "boot": true,
-          "deviceName": `${vm_name}-disk`,
-          "initializeParams": {
-            "diskSizeGb": "10",
-            "diskType": `projects/${projectId}/zones/${zone}/diskTypes/pd-ssd`,
-            "labels": {}
-          },
-        }
-      ],
-      "networkInterfaces": [
-        {
-          //"accessConfigs": [
-          //  {
-          //    "name": "External NAT",
-          //    "networkTier": "PREMIUM"
-          //  }
-          //],
-          "stackType": "IPV4_ONLY",
-          "subnetwork": `projects/${projectId}/regions/${region}/subnetworks/default`
-        }
-      ],
-      "metadata": {
-        "items": [
-          {
-            "key": "startup-script",
-            "value": "cd /home/konstantin_haustov/Test\nsudo -u konstantin_haustov ./run_test\nsudo shutdown now\n"
-          },
-          {
-            "key": "ssh-keys",
-            "value": "konstantin_haustov:ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBAp9rq19/YXhOYegn1nwv/f+sUSGjErBOgji9khrGpJd/dBlTLnU/p+rPxP6z108o1sPMSRn9pOttanRe1pq59c= google-ssh {\"userName\":\"konstantin.haustov@gmail.com\",\"expireOn\":\"2025-01-23T21:27:56+0000\"}\nkonstantin_haustov:ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCr6+D93oJJ7OwjQRQCVMZGLp3FY3dZDzwbbewIYzIOUwy+8NujuV35ZzjadvIedrt3oO1gWCR7fu4MoBqkiCYaynTG9YOcb3MAb459v9EyVxKibUXzy0XGb/VnzhRxnZsgU08SS9w3qfsOFzCVgC2EQfdNTlkubCT2wSEwmm6q8b6hLn4UkeLKCAX8WbsjKCEsE723JR6rVaPhYmlVDxydBlwtZK6Ud5b3vp3w5cjiQ+qZE8bpZgtfjpf2/2eQRUm4bUSmo3WH/rZWyDsdvfJAM54JEIxaa7UIpcaWpuD56nFWQDzCsv0xJphkWK8BeFU4/f4aOmuq2T8y3FFwwjtV google-ssh {\"userName\":\"konstantin.haustov@gmail.com\",\"expireOn\":\"2025-01-28T21:27:59+0000\"}"
-          }
-        ]
-      },
-      "scheduling": {
-        "automaticRestart": false,
-        "instanceTerminationAction": "STOP",
-        "maxRunDuration": {
-          "seconds": "3600"
-        },
-//        "onHostMaintenance": "TERMINATE",
-        "provisioningModel": provisioning
-      },
-      "serviceAccounts": [
-        {
-          "email": `${number}-compute@developer.gserviceaccount.com`,
-          "scopes": [
-            "https://www.googleapis.com/auth/devstorage.full_control",
-            "https://www.googleapis.com/auth/logging.write",
-            "https://www.googleapis.com/auth/monitoring.write",
-            "https://www.googleapis.com/auth/service.management.readonly",
-            "https://www.googleapis.com/auth/servicecontrol",
-            "https://www.googleapis.com/auth/trace.append"
-          ]
-        }
-      ],
-      "sourceMachineImage": `projects/${projectId}/global/machineImages/${image_name}`,
-      "labels": {
-        "goog-ec-src": "vm_add-rest"
-      }
-    }
-  });
-}
 
-// vm_name-template must mark place for numbers with '#' chars. E.g. "vm##" => "vm01", "vm02"...
-function createInstanceBulk(vm_name_template, vm_count, instance_template_name, startup_script) {
+// Bulk creation of VM instances from the same template
+// Each instance gets a unique name constructed by the template provided
+// vm_name_template - 
+// vm_count - number of instances to create
+// vm_name_template - instance name template; must mark place for numbers with '#' chars. E.g. "vm##" => "vm01", "vm02"...
+// startup_script
+function createInstanceBulk(instance_template_name, disk_source_image, vm_count, vm_name_template, startup_script) {
   return computeClient.bulkInsert({
     project: projectId,
     zone: zone,
@@ -137,12 +86,12 @@ function createInstanceBulk(vm_name_template, vm_count, instance_template_name, 
           {
             "autoDelete": true,
             "boot": true,
-            "deviceName": "spore-vm-spot-template",
+            "deviceName": vm_disk_name,
             "initializeParams": {
               "diskSizeGb": "10",
               "diskType": "pd-standard",
               "labels": {},
-              "sourceImage": `global/images/spore-master-disk`
+              "sourceImage": vm_disk_image
             },
             "mode": "READ_WRITE",
             "type": "PERSISTENT"
@@ -157,19 +106,14 @@ function createInstanceBulk(vm_name_template, vm_count, instance_template_name, 
           ]
         }
       }
-
-// locationPolicy is for regions only, but looks like regions are not supported by NodeJS SDK
-//,
-//      "locationPolicy": {
-//        "locations": zones_allowed
-//      },
-//      "targetShape": "ANY"
     }
   });
 }
 
 //createInstance("spore-vm5", "spore-master-image");
 
+// Delete VM instance with specified name
+// vm_name - name of the VM to delete
 function deleteInstance(vm_name) {
   return computeClient.delete({
     instance: vm_name,
@@ -180,12 +124,9 @@ function deleteInstance(vm_name) {
 
 //deleteInstance("spore-vm5");
 
+// for testing purposes
 async function try_calls() {
   /*
-  const vminfo = await getInstance("spore-master");
-  console.log(vminfo);
-
-
   const [instanceList] = await listInstances();
   console.log(`Instances found in zone ${zone}:`);
   for (const instance of instanceList) {
@@ -193,18 +134,8 @@ async function try_calls() {
   };
   */
 
-  /*
-  const [vm_create] = await createInstance("spore-vm1", vm_image);
-  console.log("Creating instance:");
-  console.log(`name = ${vm_create.name}`);
-  console.log(`done = ${vm_create.done}`);
-  console.log(`error = ${vm_create.error}`);
-  console.log(`metadata = ${vm_create.metadata}`);
-  console.log(`result = ${vm_create.result}`);
-  */
-
   console.log("Bulk instances creation:");
-  const [vm_create] = await createInstanceBulk(`${vm_base_name}###`, 3, vm_template, "");
+  const [vm_create] = await createInstanceBulk(vm_template, vm_disk_image, 3, `${vm_base_name}###`, "");
   console.log(`name = ${vm_create.name}`);
   console.log(`done = ${vm_create.done}`);
   console.log(`error = ${vm_create.error}`);
@@ -287,7 +218,7 @@ async function run_tests(num){
       not_spawned_yet = false;
 
       console.log(`Creating ${num} instances of ${vm_template}`);
-      const [vm_create] = await createInstanceBulk(vm_base_name+num_pattern, num, vm_template, vm_startup_script);
+      const [vm_create] = await createInstanceBulk(vm_template, vm_disk_image, num, vm_base_name+num_pattern, vm_startup_script);
       console.log(`name = ${vm_create.name}`);
       console.log(`done = ${vm_create.done}`);
       console.log(`error = ${vm_create.error}`);
@@ -336,5 +267,6 @@ async function run_tests(num){
 
 }
 
-run_tests(5);
-
+console.log(`Starting run_tests(${config.get(ARG_RUNNERS)})`);
+console.log(`Startup script:\n${vm_startup_script}`);
+run_tests(config.get(ARG_RUNNERS));

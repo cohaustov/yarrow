@@ -1,0 +1,22 @@
+#!/bin/bash
+# Setting environment variables
+# Following variables must be set:
+# HOST, USER, SSH_KEY, BINDIR, BASEDIR, CODEDIR
+. yarrow_config
+
+
+if [[ -z $1 ]]; then
+  echo "Getting logs from a finished yarrow session. Logs are available in tgz files - one file per runner instance."
+  echo "Usage: $0 <session_name> <destination_path>"
+  exit 1
+fi
+
+
+if [[ -z $2 ]]; then
+  TARGET=./
+else
+  TARGET=$2
+fi
+
+# Calling 'create_session' script; specifying option "StrictHostKeyChecking accept-new" to avoid questions about host's key
+scp -o "StrictHostKeyChecking accept-new" -i "$SSH_KEY" scp://"$USER"@"$HOST"/$BASEDIR/$1/*.tgz $TARGET

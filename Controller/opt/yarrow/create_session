@@ -1,0 +1,7 @@
+#!/bin/bash
+BASEDIR=/var/yarrow
+SESSION_NAME=`whoami`-`date +"%y%m%d-%H%M%S"`
+mkdir $BASEDIR/$SESSION_NAME
+mkdir $BASEDIR/$SESSION_NAME/code
+chmod 777 $BASEDIR/$SESSION_NAME
+echo $SESSION_NAME

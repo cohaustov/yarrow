@@ -1,0 +1,40 @@
+#!/bin/bash
+# Setting environment variables for yarrow* scripts located in this directory
+
+######################
+# Configurable section
+######################
+# "Controller" host
+# Specify IP address of demain name of the machine where "Yarrow Controller" is deployed
+HOST=130.211.93.47
+
+# Username to login on the HOST
+# 1) Add a user on the host "Controller": sudo useradd -m <username>
+# Password is not required; SSH key will be used for authentication
+# 2) Write down username here and use it on the next step
+USER=konstantin_haustov
+
+# Path to private SSH key used to login on the HOST
+# 1) On your local unix machine (Linux, WSL, Mac) run following command to generate key pair:
+# ssh-keygen -t rsa -f ~/.ssh/<username>-ssh-key -C <username>
+# This will generate two files in ~/.ssh/ directory:
+# "<username>-ssh-key" - private key
+# "<username>-ssh-key.pub" - private key
+# 2) Do not set password for the key! Just press enter instead. If you do, the scripts will stop and ask you to enter password every time.
+# 3) Add contents of the public key to the HOST's list of trusted SSH keys.
+# 4) Write down path to the private key here
+SSH_KEY="~/.ssh/khextreme-ssh-key"
+
+##########################
+# Non-configurable section
+##########################
+# DO NOT CHANGE the variables below
+# These parametyers are synchronized with the server side and must be kept as they are
+
+# Directories on the "Controller" HOST
+# Directory with standard scripts
+BINDIR=/opt/yarrow
+# Directory for creating sessions
+BASEDIR=/var/yarrow
+# Subdirectory with user's testing scripts in the session folder
+CODEDIR=code

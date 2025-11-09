@@ -1,0 +1,11 @@
+#!/bin/bash
+# Setting environment variables
+# Following variables must be set:
+# HOST, USER, SSH_KEY, BINDIR, BASEDIR, CODEDIR
+. yarrow_config
+
+echo "Test sessions stored on $HOST"
+echo "Format of session name: user-date-time"
+
+# Listing all sessions; specifying option "StrictHostKeyChecking accept-new" to avoid questions about host's key
+ssh -o "StrictHostKeyChecking accept-new" -i "$SSH_KEY" "$USER"@"$HOST" ls "$BASEDIR"

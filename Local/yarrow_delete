@@ -1,0 +1,15 @@
+#!/bin/bash
+# Setting environment variables
+# Following variables must be set:
+# HOST, USER, SSH_KEY, BINDIR, BASEDIR, CODEDIR
+. yarrow_config
+
+
+if [[ -z $1 ]]; then
+  echo "Specify name of the test session."
+  echo "Usage: $0 <session_name>"
+  exit 1
+fi
+
+# Removing session folder with its content; specifying option "StrictHostKeyChecking accept-new" to avoid questions about host's key
+ssh -o "StrictHostKeyChecking accept-new" -i "$SSH_KEY" "$USER"@"$HOST" rm -rf "$BASEDIR"/$1
