@@ -59,9 +59,9 @@ It makes sense to put such a directory near clonned repository of "yarrow" to ha
 yarrow
   + client
   + controller
-  + demotest
   + lib
   + runner
+  + tests
 your_project_tests
   + test_one
   + test_two
