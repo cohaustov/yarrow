@@ -1,13 +1,44 @@
 const { Builder, Browser, By, Key, until } = require('selenium-webdriver')
 const { Options } = require('selenium-webdriver/chrome');
+const args = require("../../yarrow/lib/args");
+const index = require("../../yarrow/lib/index_client");
+const index_cfg = require('../../yarrow/lib/index_cfg');
+
 
 const base_url = 'https://www.selenium.dev/';
-const number_of_runs = 1;
+
+const ARG_ITERATIONS = "iter"; // number of iterations to do
+const ARG_VMID = "vmid"; // id of current VM (1-based)
+const ARG_RUNNERS = "runners"; // number of VMs working in parallel
+const ARG_HOST = "host"; // IP address of Controller host
+const ARG_SESSION = "session"; // unique session name consisting of user name started the session and date-time suffix
+const config = new Map([
+  [ARG_ITERATIONS, 1], 
+  [ARG_VMID, 1],
+  [ARG_RUNNERS, 1]
+]);
+
+args.fillConfig(config);
+console.log('Executing with parameters:');
+config.forEach((val, key) => {
+  console.log(`${key}=${val}`);
+});
+
+// configuring "index service" client
+//index_cfg.host = config.get(ARG_HOST);
 
 console.log("Starting test");
 
 (async function run_test() {
-  for (let i=0; i<number_of_runs; i++) {
+  for (let i=0; i<config.get(ARG_ITERATIONS); i++) {
+
+    const global_id = 0;
+    try {
+      global_id = await index.getNextId(config.get(ARG_SESSION));
+    } catch (err) {
+      console.log(err.message);
+    }
+    console.log(`global_id = ${global_id}`);
 
     let options = new Options();
     options.addArguments('--headless');
