@@ -24,3 +24,4 @@ echo "Aggregating logs from runners into one file"
 ssh -o "StrictHostKeyChecking accept-new" -i "$SSH_KEY" "$USER"@"$HOST" "cd $BASEDIR/$1; $BINDIR/../client/yarrow_agglog >log.txt"
 #exec yarrow_agglog >log.txt
 scp -i "$SSH_KEY" scp://"$USER"@"$HOST"/$BASEDIR/$1/log.txt $TARGET
+
