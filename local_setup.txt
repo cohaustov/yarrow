@@ -38,14 +38,14 @@ ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDf7IR9pF5noYHkUu8k77xZSwTUFK3PFgL6mfqytPPw
 
 7. Ensure the scripts are available for running.
 Change access mode:
-chmod 777 yarrow/Local/yarrow*
+chmod 777 yarrow/client/yarrow*
 
 Check that the path to the scripts directory is in PATH environment variable.
 It can be added for one session:
-export PATH=$PATH:<path to the directory>/yarrow/Local/
+export PATH=$PATH:<path to the directory>/yarrow/client/
 
 Or it can be added to .bashrc file like this:
-PATH=$PATH:<path to the directory>/yarrow/Local/
+PATH=$PATH:<path to the directory>/yarrow/client/
 
 
 Env setup for local runs
@@ -54,6 +54,24 @@ Env setup for local runs
 sudo apt install nodejs
 sudo apt install npm
 
-2. Install "selenium webdriver" in the folder where you will edit and run the scripts locally.
+2. Create a directory for writing selenium scripts for testing your project.
+It makes sense to put such a directory near clonned repository of "yarrow" to have following structure of directories:
+yarrow
+  + client
+  + controller
+  + demotest
+  + lib
+  + runner
+your_project_tests
+  + test_one
+  + test_two
+
+Residing the tests this way is convenent because:
+1) you keep yarrow code unchanged and can 'git pull' new versions if needed
+2) you can push 'your_project_tests' separately
+3) you can access common JavaScript files from your test scripts like this: require("../../lib/args.js')
+
+
+3. Install "selenium webdriver" in the folder where you will edit and run the scripts locally.
 npm install selenium-webdriver
 

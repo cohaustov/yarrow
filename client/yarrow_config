@@ -33,7 +33,7 @@ SSH_KEY="~/.ssh/khextreme-ssh-key"
 
 # Directories on the "Controller" HOST
 # Directory with standard scripts
-BINDIR=/opt/yarrow
+BINDIR=/opt/yarrow/controller
 # Directory for creating sessions
 BASEDIR=/var/yarrow
 # Subdirectory with user's testing scripts in the session folder

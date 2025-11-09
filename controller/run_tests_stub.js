@@ -1,7 +1,7 @@
 // Trivial run_tests.js version
 // Does not actually run tests, used to check that parameters are passed correctly
 
-var args = require("./args.js");
+var args = require("../lib/args.js");
 
 const conf = new Map([
   ["session", ""],

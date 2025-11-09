@@ -5,7 +5,7 @@
 const {exit} = require('node:process');
 const {setTimeout} = require('node:timers/promises');
 const {InstancesClient} = require('@google-cloud/compute').v1;
-const args = require("./args.js");
+const args = require("../lib/args.js");
 
 const script_params = args.toString();
 

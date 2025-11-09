@@ -1,5 +1,5 @@
 #!/bin/bash
-cd /opt/yarrow
+cd /opt/yarrow/controller
 echo "Params: "$@
 #node run_tests_stub.js host=`hostname -I` $@
 node run_tests.js host=`hostname -I` $@
