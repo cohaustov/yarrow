@@ -3,6 +3,8 @@
 # Y_HOST - IP address or name of the "Controller" machine
 # Y_SESSION - name of the session (session folder on the "Controller" machine)
 # Y_SCRIPT - name of the Node.JS script to run
+# Y_RUNNERS - number of runners requested to start (actual number of started runners might be less)
+# Y_WARMUP - warmup period in seconds during durng which to distribute start of the scripts
 RUNDIR=`uname -n | cut -d'.' -f1`-`date +"%y%m%d-%H%M"`
 VMID=`uname -n | cut -d'.' -f1 | sed 's/[^1-9]*//'`
 USER=yarrow
@@ -16,6 +18,7 @@ DISPLAY=:0; export DISPLAY
 cd $LOCALDIR
 mkdir $RUNDIR
 cd $RUNDIR
+sleep $(( $Y_WARMUP * VMID / $Y_RUNNERS ))
 node ../$Y_SCRIPT $@ vmid=$VMID >log.txt 2>&1
 cd ..
 tar -czf $RUNDIR.tgz $RUNDIR

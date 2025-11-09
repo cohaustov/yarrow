@@ -13,11 +13,13 @@ const script_params = args.toString();
 const ARG_HOST = "host";
 const ARG_SESSION = "session";
 const ARG_SCRIPT = "script";
+const ARG_WARMUP = "warmup";
 const mandatory_args = [ARG_HOST, ARG_SESSION, ARG_SCRIPT];
 
 // optional arguments
 const ARG_RUNNERS = "runners";
 const config = new Map([
+  [ARG_WARMUP, 10], // warmup period in seconds; distribute start of the runners equally in this interval
   [ARG_RUNNERS, 5] // number of parallel runners
 ]);
 
@@ -47,7 +49,7 @@ const vm_disk_name = "runner-disk";
 const vm_base_name = "runner-";
 
 // shell script to run on startup on each VM instance
-const vm_startup_script = `cd /var/yarrow/tests\nsudo -u yarrow bash -c "export Y_SESSION=${config.get(ARG_SESSION)} Y_SCRIPT=${config.get(ARG_SCRIPT)} Y_HOST=${config.get(ARG_HOST)}; ../runner/run_test ${script_params}"\nsudo shutdown now\n`;
+const vm_startup_script = `cd /var/yarrow/tests\nsudo -u yarrow bash -c "export Y_SESSION=${config.get(ARG_SESSION)} Y_SCRIPT=${config.get(ARG_SCRIPT)} Y_HOST=${config.get(ARG_HOST)} Y_RUNNERS=${config.get(ARG_RUNNERS)} Y_WARMUP=${config.get(ARG_WARMUP)}; ../runner/run_test ${script_params}"\nsudo shutdown now\n`;
 
 // milliseconds to wait between VM status updates
 const wait_updates = 5000;
