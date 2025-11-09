@@ -1,0 +1,4 @@
+# Selenium and other modules installed by npm
+node_modules/
+package-lock.json
+package.json

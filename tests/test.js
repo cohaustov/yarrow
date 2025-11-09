@@ -1,3 +1,9 @@
+/*
+This is an example of testing script that uses selenium-webdriver library directly, without utility module "wd_utils".
+
+When using direct calls to selenium webdriver, you need to do "npm install selenium-webdriver" in current folder.
+*/
+
 const { Builder, Browser, By, Key, until } = require('selenium-webdriver')
 const { Options } = require('selenium-webdriver/chrome');
 const args = require("../../yarrow/lib/args");
