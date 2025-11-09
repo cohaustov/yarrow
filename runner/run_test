@@ -9,7 +9,7 @@ USER=yarrow
 SSH_KEY="/home/yarrow/.ssh/yarrow-runner-ssh-key"
 BASEDIR=/var/yarrow
 CODEDIR=code
-LOCALDIR=/var/yarrow/test
+LOCALDIR=/var/yarrow/tests
 scp -o "StrictHostKeyChecking accept-new" -i "$SSH_KEY" scp://"$USER"@"$Y_HOST"/$BASEDIR/$Y_SESSION/$CODEDIR/* $LOCALDIR
 Xvfb :0 -screen 0 1920x1080x24 2>x_err &
 DISPLAY=:0; export DISPLAY

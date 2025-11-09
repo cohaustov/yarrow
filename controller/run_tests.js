@@ -47,7 +47,7 @@ const vm_disk_name = "runner-disk";
 const vm_base_name = "runner-";
 
 // shell script to run on startup on each VM instance
-const vm_startup_script = `cd /var/yarrow\nsudo -u yarrow bash -c "export Y_SESSION=${config.get(ARG_SESSION)} Y_SCRIPT=${config.get(ARG_SCRIPT)} Y_HOST=${config.get(ARG_HOST)}; ./run_test ${script_params}"\nsudo shutdown now\n`;
+const vm_startup_script = `cd /var/yarrow/tests\nsudo -u yarrow bash -c "export Y_SESSION=${config.get(ARG_SESSION)} Y_SCRIPT=${config.get(ARG_SCRIPT)} Y_HOST=${config.get(ARG_HOST)}; ../runner/run_test ${script_params}"\nsudo shutdown now\n`;
 
 // milliseconds to wait between VM status updates
 const wait_updates = 5000;
