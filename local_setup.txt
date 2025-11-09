@@ -12,8 +12,8 @@ Here is a brief schema of the tool.
 [Controller] - a virtual machine instance for performing controlling tasks; communicates with the user, spawns new instances of runners, stores results of the tests.
 [Runner] - a virtual machine that runs individual tests; Runners are massively created when the test starts and being deleted when the test ends.
 
-Local env setup
----------------
+Local env setup for scripts
+---------------------------
 There are several tasks to do one locally and in cloud to setup local working environment.
 
 1. On your local machine. Get latest version of scripts from the git repository. On Windows, do this from WSL.
@@ -46,4 +46,14 @@ export PATH=$PATH:<path to the directory>/yarrow/Local/
 
 Or it can be added to .bashrc file like this:
 PATH=$PATH:<path to the directory>/yarrow/Local/
+
+
+Env setup for local runs
+------------------------
+1. Install Node.JS and npm. Here is how it looks on Ubuntu:
+sudo apt install nodejs
+sudo apt install npm
+
+2. Install "selenium webdriver" in the folder where you will edit and run the scripts locally.
+npm install selenium-webdriver
 
