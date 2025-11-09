@@ -18,7 +18,7 @@ DISPLAY=:0; export DISPLAY
 cd $LOCALDIR
 mkdir $RUNDIR
 cd $RUNDIR
-sleep $(( $Y_WARMUP * VMID / $Y_RUNNERS ))
+sleep $(( $Y_WARMUP * (VMID - 1) / $Y_RUNNERS ))
 node ../$Y_SCRIPT $@ vmid=$VMID >log.txt 2>&1
 cd ..
 tar -czf $RUNDIR.tgz $RUNDIR
