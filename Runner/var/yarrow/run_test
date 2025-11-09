@@ -4,6 +4,7 @@
 # Y_SESSION - name of the session (session folder on the "Controller" machine)
 # Y_SCRIPT - name of the Node.JS script to run
 RUNDIR=`uname -n | cut -d'.' -f1`-`date +"%y%m%d-%H%M"`
+VMID=`uname -n | cut -d'.' -f1 | sed 's/[^1-9]*//'`
 USER=yarrow
 SSH_KEY="/home/yarrow/.ssh/yarrow-runner-ssh-key"
 BASEDIR=/var/yarrow
@@ -15,7 +16,7 @@ DISPLAY=:0; export DISPLAY
 cd $LOCALDIR
 mkdir $RUNDIR
 cd $RUNDIR
-node ../$Y_SCRIPT $@ >log.txt 2>&1
+node ../$Y_SCRIPT $@ vmid=$VMID >log.txt 2>&1
 cd ..
 tar -czf $RUNDIR.tgz $RUNDIR
 scp -i "$SSH_KEY" $LOCALDIR/$RUNDIR.tgz scp://"$USER"@"$Y_HOST"/$BASEDIR/$Y_SESSION/
