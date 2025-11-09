@@ -2,7 +2,7 @@ import { createServer } from 'http';
 import { URL } from 'url';
 
 const port = process.env.PORT || 8400;
-const host = process.env.HOST || "bubu";
+const host = process.env.HOST || "localhost";
 
 const baseURL = `http://${host}:${port}/`;
 
