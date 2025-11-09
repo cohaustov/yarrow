@@ -1,0 +1,16 @@
+Parameters available in the script
+==================================
+Here is the list of parameters available or proposed for use in Selenium scripts run by "yarrow" tool.
+
+
+Parameters set by yarrow scripts
+--------------------------------
+runners - number of VM istances to run in parallel (this parameter is expected to be provided by user)
+vmid - number of VM instance (1-based)
+host - IP address of the Controller host
+session - session name
+script - name of the script to start (name of this script)
+
+Parameters recommended for use by scripts
+-----------------------------------------
+iter - number of iterations to do by each instance
