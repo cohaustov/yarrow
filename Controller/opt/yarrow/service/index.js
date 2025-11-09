@@ -1,4 +1,5 @@
 const { createServer } = require('node:http');
+const { exit } = require('node:process');
 const { URL }  = require('node:url');
 
 const port = process.env.YI_PORT || 8400;
@@ -7,6 +8,7 @@ const host = process.env.YI_HOST || "localhost";
 const baseURL = `http://${host}:${port}/`;
 
 const PATH_NEXTID = '/nextid';
+const PATH_TERMINATE = '/terminate_n0w';
 const PARAM_SESSION = 'session';
 const PARAM_VMID = 'vmid';
 
@@ -29,6 +31,12 @@ createServer((req, res) => {
         res.writeHead(200, { "Content-Type": "text/json" });
         res.write(`{"id": ${id}, "session": "${session}", "vmid": "${vmid}"}\n`);
         res.end();
+    } else if (reqURL.pathname == PATH_TERMINATE) {
+        res.writeHead(200, { "Content-Type": "text/plain" });
+        res.write("Terminated");
+        res.end();
+        console.log('Exiting by "terminate" command');
+        exit(0);
     } else {
         res.writeHead(200, { "Content-Type": "text/plain" });
         res.write("yarrow-index");
