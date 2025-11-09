@@ -15,7 +15,7 @@ DISPLAY=:0; export DISPLAY
 cd $LOCALDIR
 mkdir $RUNDIR
 cd $RUNDIR
-node ../$Y_SCRIPT >log.txt
+node ../$Y_SCRIPT $@ >log.txt 2>&1
 cd ..
 tar -czf $RUNDIR.tgz $RUNDIR
 scp -i "$SSH_KEY" $LOCALDIR/$RUNDIR.tgz scp://"$USER"@"$Y_HOST"/$BASEDIR/$Y_SESSION/
