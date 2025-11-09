@@ -1,8 +1,8 @@
 const { createServer } = require('node:http');
 const { URL }  = require('node:url');
 
-const port = process.env.PORT || 8400;
-const host = process.env.HOST || "localhost";
+const port = process.env.YI_PORT || 8400;
+const host = process.env.YI_HOST || "localhost";
 
 const baseURL = `http://${host}:${port}/`;
 
@@ -27,14 +27,14 @@ createServer((req, res) => {
         indexes.set(session, id);
 
         res.writeHead(200, { "Content-Type": "text/json" });
-        res.write(`{"id": ${id}, "session": "${session}", "vmid": "${vmid}"}`);
+        res.write(`{"id": ${id}, "session": "${session}", "vmid": "${vmid}"}\n`);
         res.end();
     } else {
-        res.writeHead(200, { "Content-Type": "text/json" });
-        res.write(`{"url": "${reqURL.toString()}", "pathname": "${reqURL.pathname}", "search": "${reqURL.searchParams}"}`);
+        res.writeHead(200, { "Content-Type": "text/plain" });
+        res.write("yarrow-index");
         res.end();
     }
 
 }).listen(port, () => {
-    console.log(`App is running on port ${port}`);
+    console.log(`Yarrow-index is running on port ${port}`);
 });
