@@ -1,5 +1,5 @@
-import { createServer } from 'http';
-import { URL } from 'url';
+const { createServer } = require('node:http');
+const { URL }  = require('node:url');
 
 const port = process.env.PORT || 8400;
 const host = process.env.HOST || "localhost";
