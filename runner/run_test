@@ -5,7 +5,7 @@
 # Y_SCRIPT - name of the Node.JS script to run
 # Y_RUNNERS - number of runners requested to start (actual number of started runners might be less)
 # Y_WARMUP - warmup period in seconds during durng which to distribute start of the scripts
-PATH=~/.nvm/versions/node/v22.16.0/bin/node:$PATH
+PATH=~/.nvm/versions/node/v22.16.0/bin:$PATH
 RUNDIR=`uname -n | cut -d'.' -f1`-`date +"%y%m%d-%H%M"`
 VMID=`uname -n | cut -d'.' -f1 | sed 's/[^1-9]*//'`
 USER=yarrow
