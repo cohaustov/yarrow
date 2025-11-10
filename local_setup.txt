@@ -17,7 +17,7 @@ Local env setup for scripts
 There are several tasks to do one locally and in cloud to setup local working environment.
 
 1. On your local machine. Get latest version of scripts from the git repository. On Windows, do this from WSL.
-git clone git://git.haustov.com/yarrow
+git clone https://github.com/cohaustov/yarrow.git
 
 2. On your local machine. Set correct IP or domain name of the Controller host you are going to use.
 Set parameter "HOST" in the file "yarrow_config".
